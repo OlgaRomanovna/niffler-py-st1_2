@@ -1,0 +1,6 @@
+selene==2.0.0rc9
+pytest
+requests
+python-dotenv
+faker
+urllib3>=1.26.15,<2
