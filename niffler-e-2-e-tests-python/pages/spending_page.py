@@ -12,6 +12,7 @@ class SpendingPage:
         self.category = browser.element('#react-select-3-input')
         self.description = browser.element('input[name=description]')
         self.add_button = browser.element('button[type=submit]')
+        self.error_message = browser.element('.add-spending__form .form__error')
 
     def check_spending_page_titles(self):
         browser.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -36,6 +37,9 @@ class SpendingPage:
 
         for cell in filtered_cells:
             print(f"Найдена ячейка с текстом: {cell.get(query.text)}")
+
+    def check_error_message(self):
+        self.error_message.should(have.text('Category is required'))
 
 
 spending_page = SpendingPage()

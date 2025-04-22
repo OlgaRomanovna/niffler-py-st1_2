@@ -1,21 +1,19 @@
 import os
 import pytest
-from .pages.login_page import login_page
-from .pages.spending_page import spending_page
-
+from dotenv import load_dotenv
+from pages.login_page import login_page
+from pages.spending_page import spending_page
+from marks import Pages
 
 class TestLogin:
 
+    @Pages.main_page
     def test_successful_login(self):
-        username = os.getenv('USER_NAME')
-        password = os.getenv('PASSWORD')
-
-        login_page.sign_in(username, password)
         spending_page.check_spending_page_titles()
 
-
+    load_dotenv()
     test_data = [
-        {'username': os.getenv('USER_NAME'), 'password': 12345},
+        {'username': os.getenv("USER_NAME"), 'password': 12345},
         {'username': 'Helga', 'password': '56789'}]
 
     @pytest.mark.parametrize('user', test_data)
