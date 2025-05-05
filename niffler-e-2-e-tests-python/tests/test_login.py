@@ -19,4 +19,4 @@ class TestLogin:
     @pytest.mark.parametrize('user', test_data)
     def test_wrong_data(self, user):
         login_page.sign_in(user['username'], user['password'])
-        login_page.check_error_message()
+        login_page.check_category_error_message()

@@ -6,85 +6,80 @@ import pytest
 from selene import browser
 from faker import Faker
 from clients.spends_clients import SpendsHttpClient
+from databases.spend_db import SpendDb
+from models.config import Envs
 
 
-@pytest.fixture(scope="session", autouse=True)
-def envs():
+@pytest.fixture(scope="session")
+def envs() -> Envs:
     load_dotenv()
-
-@pytest.fixture(scope="session")
-def frontend_url(envs):
-    return os.getenv("FRONTEND_URL")
-
-
-@pytest.fixture(scope="session")
-def gateway_url(envs):
-    return os.getenv("GATEWAY_URL")
-
-@pytest.fixture(scope="session")
-def profile_url(envs):
-    return os.getenv("PROFILE_URL")
+    return Envs(
+        frontend_url=os.getenv("FRONTEND_URL"),
+        gateway_url=os.getenv("GATEWAY_URL"),
+        spend_db_url=os.getenv("SPEND_DB_URL"),
+        profile_url=os.getenv("PROFILE_URL"),
+        test_username=os.getenv("USER_NAME"),
+        test_password=os.getenv("PASSWORD")
+    )
 
 
 @pytest.fixture(scope="session")
-def app_user(envs):
-    return os.getenv("USER_NAME"), os.getenv("PASSWORD")
-
-
-@pytest.fixture(scope="session")
-def auth(frontend_url, app_user):
-    username, password = app_user
-    browser.open(frontend_url)
+def auth(envs):
+    browser.open(envs.frontend_url)
     browser.element('a:nth-child(1)').click()
-    browser.element('input[name=username]').type(username)
-    browser.element('input[name=password]').type(password)
+    browser.element('input[name=username]').set_value(envs.test_username)
+    browser.element('input[name=password]').set_value(envs.test_password)
     browser.element('button[type=submit]').click()
-    time.sleep(5)
-    return browser.driver.execute_script('return window.sessionStorage.getItem("id_token");')
+    time.sleep(3)
+
+    return browser.driver.execute_script('return window.sessionStorage.getItem("id_token")')
 
 
 @pytest.fixture(scope="session")
-def spends_client(gateway_url, auth) -> SpendsHttpClient:
-    return SpendsHttpClient(gateway_url, auth)
+def spends_client(envs, auth) -> SpendsHttpClient:
+    return SpendsHttpClient(envs.gateway_url, auth)
+
+
+@pytest.fixture(scope="session")
+def spend_db(envs) -> SpendDb:
+    return SpendDb(envs.spend_db_url)
 
 
 @pytest.fixture(params=[])
-def category(request, spends_client):
+def category(request, spends_client, spend_db):
     category_name = request.param
-    current_categories = spends_client.get_categories()
-    category_names = [category["category"] for category in current_categories]
-    if category_name not in category_names:
-        spends_client.add_category(category_name)
-    return category_name
+    categories = spends_client.get_categories()
+    existing_category = next((cat for cat in categories if cat.category == category_name), None)
+
+    if existing_category:
+        category = existing_category
+        created = False
+    else:
+        category = spends_client.add_category(category_name)
+        created = True
+    yield category
+    if created:
+        spend_db.delete_category(category.id)
 
 
 @pytest.fixture(params=[])
-def spends(request, spends_client: SpendsHttpClient):
+def spends(request, spends_client):
     test_spend = spends_client.add_spends(request.param)
     yield test_spend
     all_spends = spends_client.get_spends()
-    if test_spend["id"] in [spend["id"] for spend in all_spends]:
-        spends_client.remove_spends([test_spend["id"]])
+    if test_spend.id in [spend.id for spend in all_spends]:
+        spends_client.remove_spends([test_spend.id])
 
 
 @pytest.fixture()
-def main_page(auth, frontend_url):
-    browser.open(frontend_url)
+def main_page(auth, envs):
+    browser.open(envs.frontend_url)
+
 
 @pytest.fixture()
-def profile_page(auth, profile_url):
-    browser.open(profile_url)
+def profile_page(auth, envs):
+    browser.open(envs.profile_url)
 
-
-@pytest.fixture(scope='function', autouse=True)
-def setup_browser(frontend_url):
-    browser.config.base_url = frontend_url
-    browser.config.window_width = 1200
-    browser.config.window_height = 800
-
-    browser.open('/')
-    yield
-    browser.quit()
 
 @pytest.fixture
 def generate_test_user():

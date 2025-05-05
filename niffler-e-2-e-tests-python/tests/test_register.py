@@ -14,7 +14,7 @@ class TestRegistration:
         username, password = generate_test_user
         login_page.create_new_user_button.click()
         registration_page.sign_up(username, password, 'password')
-        registration_page.check_error_message()
+        registration_page.check_category_error_message()
 
     def test_double_registration(self, generate_test_user):
         username = os.getenv('USER_NAME')
