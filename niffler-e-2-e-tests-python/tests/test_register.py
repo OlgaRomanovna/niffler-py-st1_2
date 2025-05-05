@@ -1,6 +1,6 @@
 import os
-from .pages.login_page import login_page
-from .pages.register_page import registration_page
+from pages.login_page import login_page
+from pages.register_page import registration_page
 
 class TestRegistration:
 
