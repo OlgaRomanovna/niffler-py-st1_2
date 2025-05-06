@@ -23,3 +23,8 @@ class SpendDb:
             category = session.get(Category, category_id)
             session.delete(category)
             session.commit()
+
+    def get_user_category(self, category_id: str):
+        with Session(self.engine) as session:
+            statement = select(Category).where(Category.id == category_id)
+            return session.exec(statement).first()
