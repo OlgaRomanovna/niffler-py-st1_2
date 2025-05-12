@@ -1,15 +1,21 @@
+import os
+
 from marks import Pages, TestData
 from models.category import CategoryAdd
-from utils.assertion import check_category_in_db
+from models.enum import Information, Categories
+from pages.spending_page import spending_page
+from utils.assertion import check_category_in_db, check_category_name_in_db, check_spend_in_db
 from faker import Faker
 from pages.profile_page import profiles_page
 
 fake = Faker()
 name = fake.name()
 
+TEST_CATEGORY = "school"
+
 class TestCategoryDb:
 
-    @Pages.profile_page
+    @Pages.profile
     @TestData.category_db(CategoryAdd(
         name=f"Test category name {name}"
     ))
@@ -28,7 +34,7 @@ class TestCategoryDb:
         profiles_page.should_be_category_name(new_name)
 
 
-    @Pages.profile_page
+    @Pages.profile
     @TestData.category_db(CategoryAdd(
         name=f"Test category name {name}"
     ))
@@ -42,3 +48,18 @@ class TestCategoryDb:
 
         profiles_page.archive_category(category_db.name)
         profiles_page.check_archived_category(category_db.name)
+
+    @Pages.main_page
+    def test_created_spend_exist_in_database(self, spend_db):
+        user_name = os.getenv("USER_NAME")
+        spending_page.create_spending(Information.AMOUNT, 'RUB', TEST_CATEGORY, Information.DESCRIPTION)
+        check_spend_in_db(spend_db, Information.AMOUNT, TEST_CATEGORY, Information.DESCRIPTION, user_name)
+        profiles_page.delete_spend(TEST_CATEGORY)
+
+
+    @Pages.profile
+    def test_check_category_name_changes_in_database(self, spend_db):
+        user_name = os.getenv("USER_NAME")
+        profiles_page.check_adding_category(Categories.TEST_CATEGORY2)
+        profiles_page.refresh_page()
+        check_category_name_in_db(spend_db, user_name, Categories.TEST_CATEGORY2)

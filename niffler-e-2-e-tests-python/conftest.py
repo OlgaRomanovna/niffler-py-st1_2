@@ -62,8 +62,8 @@ def category(request, spends_client, spend_db):
         spend_db.delete_category(category.id)
 
 @pytest.fixture(params=[])
-def category_db(request, category_client, spend_db):
-    category = category_client.add_category(request.param)
+def category_db(request, spends_client, spend_db):
+    category = spends_client.add_category(request.param)
     yield category
     spend_db.delete_category(category.id)
 

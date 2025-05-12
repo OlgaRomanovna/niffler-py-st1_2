@@ -1,8 +1,8 @@
 from urllib.parse import urljoin
-
 import requests
 
-from models.spend import Category, Spend, SpendAdd
+from models.category import Category
+from models.spend import Spend, SpendAdd
 
 
 class SpendsHttpClient:

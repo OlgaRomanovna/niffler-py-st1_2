@@ -1,3 +1,5 @@
+import time
+
 from selene import browser, be, have, query
 
 
@@ -28,7 +30,7 @@ class SpendingPage:
         if currency and currency != "RUB":
             browser.element('div[id="currency"]').click()
             browser.element(f'.MuiButtonBase-root[data-value="{currency}"]').click()
-
+        time.sleep(2)
         self.category.type(category).press_enter()
 
         if spend_date:
