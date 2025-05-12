@@ -12,7 +12,7 @@ class TestCategories:
     def test_add_same_categories(self):
         category_name = 'school'
         profiles_page.check_adding_category(category_name)
-        profiles_page.check_error_message()
+        profiles_page.check_category_error_message()
 
     @Pages.profile
     def test_empty_name_category(self):
