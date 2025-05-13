@@ -5,6 +5,8 @@ from models.spend import SpendAdd
 from pages.spending_page import spending_page
 from marks import Pages, TestData
 
+pytestmark = [pytest.mark.allure_label("Spendings", label_type="epic")]
+
 TEST_CATEGORY = "school"
 TEST_CATEGORY_2 = "investments"
 

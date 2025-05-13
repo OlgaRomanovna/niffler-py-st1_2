@@ -1,7 +1,10 @@
+import pytest
 from faker import Faker
 
 from marks import Pages
 from pages.profile_page import profiles_page
+
+pytestmark = [pytest.mark.allure_label("Profile", label_type="epic")]
 
 
 class TestProfile:
