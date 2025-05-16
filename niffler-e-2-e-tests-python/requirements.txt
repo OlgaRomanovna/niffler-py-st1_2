@@ -8,3 +8,5 @@ python-dotenv
 sqlalchemy
 sqlmodel
 psycopg2-binary
+allure-pytest
+requests_toolbelt

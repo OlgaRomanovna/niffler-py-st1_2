@@ -5,6 +5,8 @@ from pages.login_page import login_page
 from pages.spending_page import spending_page
 from marks import Pages
 
+pytestmark = [pytest.mark.allure_label("Login", label_type="epic")]
+
 class TestLogin:
 
     @Pages.main_page

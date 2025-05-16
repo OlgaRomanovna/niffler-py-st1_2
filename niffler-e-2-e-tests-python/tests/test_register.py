@@ -1,6 +1,11 @@
 import os
+
+import pytest
+
 from pages.login_page import login_page
 from pages.register_page import registration_page
+
+pytestmark = [pytest.mark.allure_label("Registration", label_type="epic")]
 
 class TestRegistration:
 

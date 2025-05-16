@@ -1,5 +1,7 @@
 import os
 
+import pytest
+
 from marks import Pages, TestData
 from models.category import CategoryAdd
 from models.enum import Information, Categories
@@ -7,6 +9,8 @@ from pages.spending_page import spending_page
 from utils.assertion import check_category_in_db, check_category_name_in_db, check_spend_in_db
 from faker import Faker
 from pages.profile_page import profiles_page
+
+pytestmark = [pytest.mark.allure_label("Category DB", label_type="epic")]
 
 fake = Faker()
 name = fake.name()

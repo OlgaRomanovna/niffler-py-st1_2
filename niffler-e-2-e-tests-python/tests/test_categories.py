@@ -1,5 +1,9 @@
+import pytest
+
 from marks import Pages
 from pages.profile_page import profiles_page
+
+pytestmark = [pytest.mark.allure_label("Category", label_type="epic")]
 
 class TestCategories:
 
