@@ -4,6 +4,7 @@ from sqlalchemy import create_engine, Engine
 from sqlmodel import Session, select
 
 from models.category import Category
+from models.config import Envs
 from models.spend import SpendSQL
 
 
@@ -11,8 +12,8 @@ class SpendDb:
 
     engine: Engine
 
-    def __init__(self, db_url: str):
-        self.engine = create_engine(db_url)
+    def __init__(self, envs: Envs):
+        self.engine = create_engine(envs.spend_db_url)
 
     def get_user_categories(self, username: str) -> Sequence[Category]:
         with Session(self.engine) as session:
