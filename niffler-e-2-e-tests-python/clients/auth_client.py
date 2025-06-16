@@ -1,8 +1,17 @@
+import base64
+import hashlib
+import logging
+import os
+import re
+from urllib.parse import urlparse, parse_qs
+
+import curlify
 import pkce
+from requests import Session
 
 from models.config import Envs
-from utils.sessions import AuthSession
 from models.oauth import OAuthRequest
+from utils.sessions import AuthSession
 
 
 class AuthClient:
@@ -28,7 +37,7 @@ class AuthClient:
         self.code_verifier, self.code_challenge = pkce.generate_pkce_pair()
         self.token = None
 
-    def auth(self, username, password):
+    def auth(self, username: str, password: str):
         """Возвращает token oauth для авторизации пользователя с username и password
         1. Получаем jsessionid и xsrf-token куку в сессию.
         2. Получаем code из redirec по xsrf-token'у.
@@ -67,3 +76,24 @@ class AuthClient:
 
         self.token = token_response.json().get("access_token", None)
         return self.token
+
+    def register(self, username: str, password: str):
+        self.session.get(
+            url="/register",
+            params={
+                "redirect_uri": "http://auth.niffler.dc:9000/register",
+            },
+            allow_redirects=True
+        )
+
+        result = self.session.post(
+            url="/register",
+            data={
+                "username": username,
+                "password": password,
+                "passwordSubmit": password,
+                "_csrf": self.session.cookies.get("XSRF-TOKEN")
+            },
+            allow_redirects=True
+        )
+        return result

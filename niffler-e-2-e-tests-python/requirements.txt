@@ -9,3 +9,5 @@ sqlalchemy
 sqlmodel
 psycopg2-binary
 curlify
+confluent-kafka
+allure-pytest
