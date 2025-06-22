@@ -1,7 +1,7 @@
 ## Проект автоматизированного тестирования приложения Niffler.
 
 <p  align="center">
-<code><img width="75%" title="main_page" src="images/niffler.PNG"></code>
+<code><img width="75%" title="main_page" src="images/niffler.png"></code>
 </p>  
 
 # 🧪 Niffler — UI / API / E2E Тесты
