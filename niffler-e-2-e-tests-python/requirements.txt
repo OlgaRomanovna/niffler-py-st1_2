@@ -11,3 +11,5 @@ psycopg2-binary
 curlify
 confluent-kafka
 allure-pytest
+pkce
+jinja2

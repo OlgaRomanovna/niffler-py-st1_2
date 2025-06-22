@@ -42,7 +42,7 @@ def test_add_spend_without_description(spends_client: SpendsHttpClient, spend_db
         spendDate=datetime.now().strftime("%Y-%m-%d"),
         currency="RUB",
     )
-    new_spend = spends_client.add_spend(data)
+    new_spend = spends_client.add_spends(data)
 
     assert new_spend.category.name == Categories.TEST_CATEGORY5
     assert new_spend.description == ''
@@ -59,7 +59,7 @@ def test_add_spend_with_minimal_amount(spends_client: SpendsHttpClient, spend_db
         spendDate=datetime.now().strftime("%Y-%m-%d"),
         currency="RUB",
     )
-    new_spend = spends_client.add_spend(data)
+    new_spend = spends_client.add_spends(data)
 
     assert new_spend.category.name == Categories.TEST_CATEGORY5
     assert new_spend.amount == 0.01

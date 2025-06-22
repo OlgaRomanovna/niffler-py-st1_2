@@ -25,7 +25,7 @@ def category_db(request: FixtureRequest, category_client: CategoryHttpClient, sp
 
 @pytest.fixture(params=[])
 def spends(request: FixtureRequest, spends_client: SpendsHttpClient):
-    t_spend = spends_client.add_spend(request.param)
+    t_spend = spends_client.add_spends(request.param)
     yield t_spend
     all_spends = spends_client.get_spends()
     if t_spend.id in [spend.id for spend in all_spends]:
