@@ -2,7 +2,7 @@ from clients.category_client import CategoryHttpClient
 from databases.spend_db import SpendDb
 from marks import TestData
 from models.category import CategoryAdd
-from models.enums import Categories
+from models.enum import Categories
 import pytest
 
 pytestmark = [pytest.mark.allure_label("Category API", label_type="epic")]

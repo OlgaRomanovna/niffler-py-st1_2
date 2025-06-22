@@ -37,6 +37,7 @@ def check_category_name_in_db(spend_db, username: str, target_name: str):
     for category in spends:
         categories.append(category.name)
     assert target_name in categories
+
 def allure_reporter(config) -> AllureReporter:
     listener: AllureListener = next(
         filter(
@@ -46,6 +47,7 @@ def allure_reporter(config) -> AllureReporter:
         None,
     )
     return listener.allure_logger
+
 def humanify(name: str):
     import re
     return ' '.join(re.split('_+', name))
@@ -55,6 +57,7 @@ def write_log_to_file(data: str):
     file_name = (resource.path_log_file(log_file) + ".log")
     with open(file_name, 'a', encoding='utf=8') as logger_file:
         logger_file.write(data + '\n')
+
 def step(fn):
     def fn_with_logging(*args, **kwargs):
         is_method = (

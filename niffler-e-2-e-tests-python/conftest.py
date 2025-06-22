@@ -8,8 +8,11 @@ from dotenv import load_dotenv
 from faker import Faker
 from pytest import Item, FixtureDef, FixtureRequest
 
+from clients.auth_client import AuthClient
+from clients.kafka_client import KafkaClient
 from models.config import Envs
 from utils.helper import allure_reporter
+
 
 pytest_plugins = ["fixtures.auth_fixtures", "fixtures.client_fixtures", "fixtures.pages_fixtures"]
 
@@ -59,8 +62,23 @@ def envs() -> Envs:
         spend_db_url=os.getenv("SPEND_DB_URL"),
         profile_url=os.getenv("PROFILE_URL"),
         test_username=os.getenv("USER_NAME"),
-        test_password=os.getenv("PASSWORD")
+        test_password=os.getenv("PASSWORD"),
+        kafka_address=os.getenv("KAFKA_ADDRESS"),
+        userdata_db_url=os.getenv("USERDATA_DB_URL"),
+        auth_db_url=os.getenv("AUTH_DB_URL"),
+        registration_url=os.getenv("REGISTRATION_URL"),
+        auth_url=os.getenv("AUTH_URL"),
     )
+
+@pytest.fixture(scope="session")
+def auth_client(envs: Envs):
+    return AuthClient(envs)
+
+@pytest.fixture(scope="session")
+def kafka(envs):
+    """Взаимодействие с Kafka"""
+    with KafkaClient(envs) as k:
+        yield k
 
 
 @pytest.fixture
