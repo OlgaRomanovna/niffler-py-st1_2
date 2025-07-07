@@ -1,37 +1,37 @@
 import json
 import logging
-
 from confluent_kafka import TopicPartition
 from confluent_kafka.admin import AdminClient
 from confluent_kafka.cimpl import Consumer, Producer
 
 from utils.waiters import wait_until_timeout
 
+
 class KafkaClient:
     """Класс для взаимодействия с кафкой"""
 
     def __init__(
-            self,
-            envs,
-            client_id: str = 'tester',
-            group_id: str = 'tester',
-
+        self,
+        kafka_bootstrap_servers: str,
+        client_id: str = 'tester',
+        group_id: str = 'tester',
     ):
-        self.server = envs.kafka_address
+        self.server = kafka_bootstrap_servers
+
         self.admin = AdminClient(
-            {"bootstrap.servers": f"{self.server}:9092"}
+            {"bootstrap.servers": self.server}
         )
         self.producer = Producer(
-            {"bootstrap.servers": f"{self.server}:9092"}
+            {"bootstrap.servers": self.server}
         )
         self.consumer = Consumer(
             {
-                "bootstrap.servers": f"localhost:9093",
+                "bootstrap.servers": self.server,
                 "group.id": group_id,
                 "client.id": client_id,
                 "auto.offset.reset": "latest",
                 "enable.auto.commit": False,
-                "enable.ssl.certificate.verification": False
+                "enable.ssl.certificate.verification": False,
             }
         )
 
@@ -49,6 +49,7 @@ class KafkaClient:
             return [topics.get(item).topic for item in topics]
         except RuntimeError:
             logging.error("no topics in kafka")
+            return []
 
     @wait_until_timeout
     def consume_message(self, partitions, **kwargs):
@@ -56,10 +57,15 @@ class KafkaClient:
         self.consumer.assign(partitions)
         try:
             message = self.consumer.poll(1.0)
+            if message is None:
+                return None
+            if message.error():
+                logging.error(f"Kafka message error: {message.error()}")
+                return None
             logging.debug(f'{message.value()}')
             return message.value()
         except AttributeError:
-            pass
+            return None
 
     def get_last_offset(self, topic: str = "", partition_id=0):
         """Вернуть последнюю позицию партиции"""
@@ -69,6 +75,7 @@ class KafkaClient:
             return high
         except Exception as err:
             logging.error("probably no such topic: %s: %s", topic, err)
+            return None
 
     def log_msg_and_json(self, topic_partitions):
         msg = self.consume_message(topic_partitions, timeout=25)
