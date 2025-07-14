@@ -1,4 +1,5 @@
 import allure
+import curlify
 import requests
 from utils.sessions import BaseSession
 from models.config import Envs
@@ -31,6 +32,7 @@ class SpendsHttpClient:
     def add_spends(self, spend: SpendAdd) -> Spend:
         response = self.session.post("/api/spends/add", json=spend.model_dump())
         # self.raise_for_status(response)
+        print("CURL:", curlify.to_curl(response.request))
         assert response.status_code == 201
         return Spend.model_validate(response.json())
 
@@ -47,6 +49,7 @@ class SpendsHttpClient:
     @allure.step('HTTP: update spends')
     def update_spend(self, update: Spend) -> Spend:
         response = self.session.patch("/api/spends/edit", data=update.model_dump_json())
+        print("CURL:", curlify.to_curl(response.request))
         # response.raise_for_status()
         assert response.status_code == 200
         return Spend.model_validate(response.json())

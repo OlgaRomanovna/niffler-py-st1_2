@@ -6,14 +6,23 @@ from urllib.parse import urljoin
 
 
 @pytest.fixture()
-def profile_page(envs: Envs, auth: str):
-    profile_url = urljoin(envs.frontend_url, "/profile")
-    browser.open(profile_url)
+def profile_page(auth: str, envs: Envs):
+    return browser.open(envs.profile_url)
 
 
 @pytest.fixture()
 def main_page(auth: str, envs: Envs):
     browser.open(envs.frontend_url)
+
+@pytest.fixture()
+def login(envs: Envs):
+    login = urljoin(envs.frontend_url, "/login")
+    return browser.open(login)
+
+@pytest.fixture()
+def register(envs: Envs):
+    return browser.open(envs.registration_url)
+
 
 
 # добавление авторизации в браузер

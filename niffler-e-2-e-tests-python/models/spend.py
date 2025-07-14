@@ -18,7 +18,7 @@ class Spend(BaseModel):
 class SpendAdd(BaseModel):
     amount: float
     description: str
-    category: CategoryAdd
+    category: str
     spendDate: str
     currency: str
 

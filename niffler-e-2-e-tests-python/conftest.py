@@ -68,7 +68,8 @@ def envs() -> Envs:
         auth_db_url=os.getenv("AUTH_DB_URL"),
         registration_url=os.getenv("REGISTRATION_URL"),
         auth_url=os.getenv("AUTH_URL"),
-        kafka_bootstrap_servers=os.getenv("KAFKA_BOOTSTRAP_SERVERS")
+        kafka_bootstrap_servers=os.getenv("KAFKA_BOOTSTRAP_SERVERS"),
+        auth_secret=os.getenv("AUTH_SECRET")
     )
 
 @pytest.fixture(scope="session")

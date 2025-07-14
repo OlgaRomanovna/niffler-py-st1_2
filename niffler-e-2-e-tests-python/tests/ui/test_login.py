@@ -11,12 +11,12 @@ class TestLogin:
     def test_successful_login(self):
         spending_page.check_spending_page_titles()
 
-    load_dotenv()
     test_data = [
-        {'username': os.getenv("USER_NAME"), 'password': 12345},
+        {'username': 'oleg', 'password': 12345},
         {'username': 'Helga', 'password': '56789'}]
 
+    @Pages.login
     @pytest.mark.parametrize('user', test_data)
     def test_wrong_data(self, user):
         login_page.sign_in(user['username'], user['password'])
-        login_page.check_category_error_message()
+        login_page.check_error_message()
