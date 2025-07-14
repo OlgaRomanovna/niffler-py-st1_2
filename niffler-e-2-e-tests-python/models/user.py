@@ -16,5 +16,4 @@ class User(SQLModel, table=True):
     currency: str
     photo: str | None = None
     photo_small: str | None = None
-    full_name: str
     __table_args__ = {"extend_existing": True}

@@ -1,4 +1,4 @@
-## **Технологии, использованные в Niffler**
+## **Технологии, использованные в Niffler 2.0**
 
 - [Spring Authorization Server](https://spring.io/projects/spring-authorization-server)
 - [Spring OAuth 2.0 Resource Server](https://docs.spring.io/spring-security/reference/servlet/oauth2/resource-server/index.html)
@@ -25,7 +25,7 @@
 - [Java 21](https://adoptium.net/en-GB/temurin/releases/)
 - [Gradle 8.6](https://docs.gradle.org/8.6/release-notes.html)
 - [GHA](https://docs.github.com/en/actions)
-- And much more:)
+- И многие другие
 
 Рекомендуемые материалы к просмотру (прочтению):
 
@@ -43,7 +43,7 @@
 - [(Hopefully) the final article about equals and hashCode for JPA entities with DB-generated IDs](https://jpa-buddy.com/blog/hopefully-the-final-article-about-equals-and-hashcode-for-jpa-entities-with-db-generated-ids/)
 -
 
-**Схема проекта Niffler**
+**Схема проекта Niffler 2.0**
 
 <img src="niffler-diagram.png" width="600">
 
@@ -51,10 +51,10 @@
 
 #### 0. Если у вас ОС Windows
 
-Во-первых, и в-главных, необходимо использовать bash terminal, а не powershell.
-Во-вторых, для запуска фронтенда локально необходимо использовать команду
-`npm run build:windows`, если не работает стандартная команда `npm run build:dev`
-В-третьих, если у вас что-то не работает - пишите в TG чат группы - будем вместе дополнять README, т.к. изначально
+Во-первых, и в-главных, необходимо использовать [bash terminal](https://www.geeksforgeeks.org/working-on-git-bash/), а
+не powershell.
+[Полезное и короткое видео о git bash](https://www.youtube.com/watch?v=zM9Mb-otqww)
+Во-вторых, если у вас что-то не работает - пишите в TG чат группы - будем вместе дополнять README, т.к. изначально
 проект разработан под nix
 
 #### 1. Установить docker (Если не установлен)
@@ -111,7 +111,7 @@ User-MacBook-Pro  niffler % bash localenv.sh
 Или выполнив последовательно команды, для *nix:
 
 ```posh
-docker run --name niffler-all -p 5432:5432 -e POSTGRES_PASSWORD=secret -v pgdata:/var/lib/postgresql/data -d postgres:15.1
+docker run --name niffler-all -p 5432:5432 -e POSTGRES_PASSWORD=secret -e CREATE_DATABASES=niffler-auth,niffler-currency,niffler-spend,niffler-userdata -e TZ=GMT+3 -e PGTZ=GMT+3 -v pgdata:/var/lib/postgresql/data -v ./postgres/script:/docker-entrypoint-initdb.d -d postgres:15.1 --max_prepared_transactions=100
 
 docker run --name=zookeeper -e ZOOKEEPER_CLIENT_PORT=2181 -p 2181:2181 -d confluentinc/cp-zookeeper:7.3.2
 
@@ -127,33 +127,31 @@ docker run --name=kafka -e KAFKA_BROKER_ID=1 \
 Для Windows (Необходимо использовать bash terminal: gitbash, cygwin или wsl):
 
 ```posh
-docker run --name niffler-all -p 5432:5432 -e POSTGRES_PASSWORD=secret -v pgdata:/var/lib/postgresql/data -d postgres:15.1
+docker run --name niffler-all -p 5432:5432 -e POSTGRES_PASSWORD=secret -e CREATE_DATABASES=niffler-auth,niffler-currency,niffler-spend,niffler-userdata -e TZ=GMT+3 -e PGTZ=GMT+3 -v pgdata:/var/lib/postgresql/data -v ./postgres/script:/docker-entrypoint-initdb.d -d postgres:15.1 --max_prepared_transactions=100
 
 docker run --name=zookeeper -e ZOOKEEPER_CLIENT_PORT=2181 -p 2181:2181 -d confluentinc/cp-zookeeper:7.3.2
 
-docker run --name=kafka -e KAFKA_BROKER_ID=1 -e KAFKA_ZOOKEEPER_CONNECT=$(docker inspect zookeeper --format='{{ .NetworkSettings.IPAddress }}'):2181 -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092 -e KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1 -e KAFKA_TRANSACTION_STATE_LOG_MIN_ISR=1 -e KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=1 -p 9092:9092 -d confluentinc/cp-kafka:7.3.2
+docker run --name=kafka -e KAFKA_BROKER_ID=1 -e KAFKA_ZOOKEEPER_CONNECT=$(docker inspect zookeeper --format="{{ .NetworkSettings.IPAddress }}"):2181 -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092 -e KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1 -e KAFKA_TRANSACTION_STATE_LOG_MIN_ISR=1 -e KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=1 -p 9092:9092 -d confluentinc/cp-kafka:7.3.2
 ```
 
-https://github.com/confluentinc/cp-docker-images/issues/801#issuecomment-692085103
+[Про IP zookeeper](https://github.com/confluentinc/cp-docker-images/issues/801#issuecomment-692085103)
 
-#### 5. Установить одну из программ для визуальной работы с Postgres
+Если вы используете Windows и контейнер с БД не стартует с ошибкой в логе:
 
-Например, DBeaver или Datagrip. Мы рекомендуем бесплатную PgAdmin 4.
-
-#### 6. Подключиться к БД postgres (host: localhost, port: 5432, user: postgres, pass: secret, database name: postgres) из PgAdmin и создать пустые БД микросервисов
-
-```sql
-create
-    database "niffler-userdata" with owner postgres;
-create
-    database "niffler-spend" with owner postgres;
-create
-    database "niffler-currency" with owner postgres;
-create
-    database "niffler-auth" with owner postgres;
+```
+server started
+/usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/init-database.sh
+/usr/local/bin/docker-entrypoint.sh: /docker-entrypoint-initdb.d/init-database.sh: /bin/bash^M: bad interpreter: No such file or directory
 ```
 
-#### 7. Установить Java версии 21. Это необходимо, т.к. проект использует синтаксис Java 21
+То необходимо выполнить следующие команды в каталоге /postgres :
+
+```
+sed -i -e 's/\r$//' init-database.sh
+chmod +x init-database.sh
+```
+
+#### 5. Установить Java версии 21. Это необходимо, т.к. проект использует синтаксис Java 21
 
 Версию установленной Java необходимо проверить командой `java -version`
 
@@ -165,12 +163,13 @@ OpenJDK 64-Bit Server VM Temurin-21.0.1+12 (build 21.0.1+12-LTS, mixed mode)
 ```
 
 Если у вас несколько версий Java одновременно - то хотя бы одна из них должна быть 21
-Если java не установлена вовсе, то рекомендую установить OpenJDK (например, из https://adoptium.net/en-GB/temurin/releases/)
+Если java не установлена вовсе, то рекомендую установить OpenJDK (например,
+из https://adoptium.net/en-GB/temurin/releases/)
 
-#### 8. Установить пакетый менеджер для сборки front-end npm
+#### 6. Установить пакетый менеджер для сборки front-end npm
 
 [Инструкция](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm).
-Рекомендованная версия Node.js - 18.13.0 (LTS)
+Рекомендованная версия Node.js - 22.6.0
 
 # Запуск Niffler локальное в IDE:
 
@@ -179,30 +178,23 @@ OpenJDK 64-Bit Server VM Temurin-21.0.1+12 (build 21.0.1+12-LTS, mixed mode)
 для REST:
 
 ```posh
-User-MacBook-Pro niffler % cd niffler-frontend
+User-MacBook-Pro niffler % cd niffler-ng-client
 ```
 
-или для GraphQL:
+или для GraphQL **_(временно недоступно)_**:
 
 ```posh
-User-MacBook-Pro niffler % cd niffler-frontend-gql
+User-MacBook-Pro niffler % cd niffler-ng-gql-client
 ```
 
-#### 2. Запустить фронтенд (сначала обновить зависимости)
-
-Для *nix:
+#### 2. Запустить фронтенд в режиме preview (сначала обновить зависимости)
 
 ```posh
-User-MacBook-Pro niffler-frontend % npm i
-User-MacBook-Pro niffler-frontend % npm run build:dev
+User-MacBook-Pro niffler-ng-client % npm i
+User-MacBook-Pro niffler-ng-client % npm run build:dev
 ```
 
-Для Windows:
-
-```posh
-User-MacBook-Pro niffler-frontend % npm i
-User-MacBook-Pro niffler-frontend % npm run build:windows
-```
+Если требуется dev режим (вы собираетесь править frontend и на лету видеть изменения), запускаем командой `npm run dev`
 
 #### 3. Прописать run конфигурацию для всех сервисов niffler-* - Active profiles local
 
@@ -222,6 +214,11 @@ User-MacBook-Pro niffler-auth % gradle bootRun --args='--spring.profiles.active=
 выполнен предыдущий пункт)
 
 #### 5  Запустить в любой последовательности другие сервисы: niffler-currency, niffler-spend, niffler-gateway, niffler-userdata
+
+Фронтенд Niffler при запуске локально будет работать для вас по адресу http://127.0.0.1:3000/,
+OpenAPI (Swagger) сервиса niffler-gateway доступен по адресу: http://127.0.0.1:8090/swagger-ui/index.html
+GraphiQL интерфейс сервиса niffler-gateway доступен по адресу: http://127.0.0.1:8090/graphiql
+WSDL сервиса niffler-userdata доступен по адресу: http://127.0.0.1:8089/ws/userdata.wsdl
 
 # Запуск Niffler в докере:
 
@@ -262,29 +259,23 @@ User-MacBook-Pro niffler % vi /etc/hosts
 User-MacBook-Pro niffler % cd niffler
 ```
 
-#### 6. Запустить все сервисы, если необходим фронтенд GraphQL, то это указывается аргументом к скрипту:
-
-для REST:
+#### 6. Запустить все сервисы
 
 ```posh
 User-MacBook-Pro  niffler % bash docker-compose-dev.sh
 ```
 
-для GraphQL:
-
-```posh
-User-MacBook-Pro  niffler % bash docker-compose-dev.sh gql
-```
-
-Текущая версия `docker-compose-dev.sh` **удалит все запущенные Docker контейнеры в системе**, поэтому если у вас есть созданные
+Текущая версия `docker-compose-dev.sh` **удалит все запущенные Docker контейнеры в системе**, поэтому если у вас есть
+созданные
 контейнеры для других проектов - отредактируйте строку ```posh docker rm $(docker ps -a -q)```, чтобы включить в grep
 только те контейнеры, что непосредственно относятся к niffler.
 
-Niffler при запуске в докере будет работать для вас по адресу http://frontend.niffler.dc:80, этот порт НЕ НУЖНО
-указывать
-в браузере, таким образом переходить напрямую по ссылке http://frontend.niffler.dc
+Фронтенд Niffler при запуске в докере будет работать для вас по адресу http://frontend.niffler.dc,
+OpenAPI (Swagger) сервиса niffler-gateway доступен по адресу: http://gateway.niffler.dc:8090/swagger-ui/index.html
+GraphiQL интерфейс сервиса niffler-gateway доступен по адресу: http://gateway.niffler.dc:8090/graphiql
+WSDL сервиса niffler-userdata доступен по адресу: http://localhost:8089/ws/userdata.wsdl
 
-Если при выполнении скрипта вы получили ошибку
+Если при выполнении скрипта `docker-compose-dev.sh` вы получили ошибку:
 
 ```
 * What went wrong:
@@ -295,8 +286,10 @@ Build to Docker daemon failed, perhaps you should make sure your credentials for
 
 То необходимо убедиться, что в `$USER/.docker/config.json` файле отсутствует запись `"credsStore": "desktop"`
 При наличии такого ключа в json, его надо удалить.
-Если файл пустой, то возможно не выполнен `docker login`. Если выполнялся, то надо создать файл руками по пути `$USER/.docker/config.json`
+Если файл пустой, то возможно не выполнен `docker login`. Если выполнялся, то надо создать файл руками по пути
+`$USER/.docker/config.json`
 с содержимым,
+
 ```
  {
         "auths": {
@@ -306,12 +299,31 @@ Build to Docker daemon failed, perhaps you should make sure your credentials for
 }
 ```
 
+Если вы не можете подключиться к БД в docker, указывая верные login и password, то возможно у вас поднята другая база на
+том же порту 5432.
+Это известная проблема, что Postgres в docker может стартануть при зянятом порту 5432, надо убедиться что у вас не
+поднят никакой другой Postgres на этом порту.
+
+Если вы используете Windows и контейнер с БД не стартует с ошибкой в логе:
+
+```
+server started
+/usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/init-database.sh
+/usr/local/bin/docker-entrypoint.sh: /docker-entrypoint-initdb.d/init-database.sh: /bin/bash^M: bad interpreter: No such file or directory
+```
+
+То необходимо выполнить следующие команды в каталоге /postgres/script :
+
+```
+sed -i -e 's/\r$//' init-database.sh
+chmod +x init-database.sh
+```
+
 # Создание своего docker repository для форка Niffler и сборка своих докер контейнеров
 
 #### 1. Войти в свою УЗ на https://hub.docker.com/ и последовательно создать публичные репозитории
 
-- niffler-frontend
-- niffler-frontend-gql
+- niffler-ng-client
 - niffler-userdata
 - niffler-spend
 - niffler-gateway
@@ -334,18 +346,12 @@ Build to Docker daemon failed, perhaps you should make sure your credentials for
 User-MacBook-Pro niffler % cd niffler
 ```
 
-#### 5. Собрать все имеджи, запушить и запустить niffler одной командой, если необходим фронтенд GraphQL, то это указывается аргументом к скрипту:
+#### 5. Собрать все имеджи, запушить и запустить niffler одной командой:
 
 для REST:
 
 ```posh
 User-MacBook-Pro  niffler % bash docker-compose-dev.sh push
-```
-
-для GraphQL:
-
-```posh
-User-MacBook-Pro  niffler % bash docker-compose-dev.sh gql push
 ```
 
 # Запуск e-2-e тестов в Docker network изолированно Niffler в докере:
@@ -356,22 +362,16 @@ User-MacBook-Pro  niffler % bash docker-compose-dev.sh gql push
 User-MacBook-Pro niffler % cd niffler
 ```
 
-#### 2. Запустить все сервисы и тесты, если необходим фронтенд GraphQL, то это указывается аргументом к скрипту:
-
-для REST:
+#### 2. Запустить все сервисы и тесты:
 
 ```posh
 User-MacBook-Pro  niffler % bash docker-compose-e2e.sh
 ```
 
-для GraphQL:
-
-```posh
-User-MacBook-Pro  niffler % bash docker-compose-e2e.sh gql
-```
-
 #### 3. Selenoid UI доступен по адресу: http://localhost:9090/
 
-#### 4. Allure доступен по адресу: http://localhost:5050/allure-docker-service/projects/niffler-e-2-e-tests/reports/latest/index.html
+#### 5. Allure-ui доступен по адресу: http://localhost:5252/
 
-<img src="/niffler-frontend/public/images/niffler-logo.png" width="250">
+#### 4. Allure report доступен по адресу: http://localhost:5050/allure-docker-service/projects/niffler-ng/reports/latest/index.html
+
+<img src="/niffler-ng-client/src/assets/images/niffler-with-a-coin.png" width="250">

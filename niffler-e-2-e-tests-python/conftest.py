@@ -68,6 +68,7 @@ def envs() -> Envs:
         auth_db_url=os.getenv("AUTH_DB_URL"),
         registration_url=os.getenv("REGISTRATION_URL"),
         auth_url=os.getenv("AUTH_URL"),
+        kafka_bootstrap_servers=os.getenv("KAFKA_BOOTSTRAP_SERVERS")
     )
 
 @pytest.fixture(scope="session")
@@ -76,8 +77,9 @@ def auth_client(envs: Envs):
 
 @pytest.fixture(scope="session")
 def kafka(envs):
-    """Взаимодействие с Kafka"""
-    with KafkaClient(envs) as k:
+    # Передавай сюда адрес, например "localhost:9093" или "kafka:9092" в зависимости от окружения
+    kafka_servers = envs.kafka_bootstrap_servers
+    with KafkaClient(kafka_bootstrap_servers=kafka_servers) as k:
         yield k
 
 
