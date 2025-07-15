@@ -1,4 +1,5 @@
 import allure
+import curlify
 import requests
 from utils.sessions import BaseSession
 from models.config import Envs
@@ -26,7 +27,9 @@ class CategoryHttpClient:
 
     @step
     @allure.step('HTTP: add category')
-    def add_category(self, category: CategoryAdd) -> Category:
-        response = self.session.post("/api/categories/add", json=category.model_dump())
-        # self.raise_for_status(response)
+    def add_category(self, category_add: CategoryAdd) -> Category:
+        json_data = category_add.model_dump()
+        response = self.session.post("/api/categories/add", json=json_data)
+        if response.status_code != 200:
+            raise RuntimeError(f"Failed to add category: {response.status_code} {response.text}")
         return Category.model_validate(response.json())

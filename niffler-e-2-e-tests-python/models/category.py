@@ -9,6 +9,5 @@ class Category(SQLModel, table=True):
 
 
 class CategoryAdd(BaseModel):
-    name: str
+    category: str
     username: str | None = None
-    archived: bool | None = None

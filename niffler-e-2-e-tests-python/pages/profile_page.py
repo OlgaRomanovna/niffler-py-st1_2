@@ -15,6 +15,7 @@ class ProfilePage:
         self.profile = browser.element('//li[.="Profile"]')
         self.category_name = lambda name_category: browser.element(f'//span[.="{name_category}"]').should(
             have.text(f"{name_category}"))
+        self.category_name_in_profile = browser.element('.categories__list li:nth-child(1)')
         self.name = browser.element('input[name=category]')
         self.category_name = lambda name: browser.all('span.MuiChip-label.MuiChip-labelMedium.css-14vsv3w').element_by(
             have.text(name))
@@ -61,7 +62,7 @@ class ProfilePage:
         browser.driver.refresh()
 
     def edit_category_name(self, old_name: str, new_name: str) -> None:
-        self.category_name(old_name).should(be.present).click()
+        self.category_name_in_profile(old_name).should(be.present).click()
         self.category_input(old_name).clear().should(be.blank).type(new_name)
         self.category_input(new_name).press_enter()
 
@@ -70,7 +71,7 @@ class ProfilePage:
         self.confirm_archive.click()
 
     def should_be_category_name(self, name: str) -> None:
-        self.category_name(name).should(be.present)
+        self.category_name_in_profile(name).should(be.present)
 
     def check_archived_category(self, name: str) -> None:
         self.archived_button.click()

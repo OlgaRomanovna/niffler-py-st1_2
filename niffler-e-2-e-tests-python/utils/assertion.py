@@ -1,12 +1,10 @@
 
-def check_category_in_db(spend_db, category_id: str, expected_name: str, expected_username: str,
-                         expected_archived: bool):
+def check_category_in_db(spend_db, category_id: str, expected_name: str, expected_username: str):
     category = spend_db.get_user_category(category_id)
 
     assert category is not None
     assert category.category == expected_name
     assert category.username == expected_username
-    assert category.archived == expected_archived
 
 
 def check_spend_in_db(spend_db, amount: float, category_name: str, description: str, username: str):
@@ -25,5 +23,5 @@ def check_category_name_in_db(spend_db, username: str, target_name: str):
     spends = spend_db.get_user_categories(username)
     categories = []
     for category in spends:
-        categories.append(category.name)
+        categories.append(category.category)
     assert target_name in categories

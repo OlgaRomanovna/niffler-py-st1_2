@@ -37,3 +37,10 @@ class SpendDb:
                 SpendSQL.username == username)
             result = session.exec(statement).all()
             return result
+
+    def delete_spend(self, spend_id: str):
+        with Session(self.engine) as session:
+            spend = session.get(SpendSQL, spend_id)
+            if spend:
+                session.delete(spend)
+                session.commit()

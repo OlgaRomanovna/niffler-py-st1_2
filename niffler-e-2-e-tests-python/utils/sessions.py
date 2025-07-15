@@ -1,3 +1,4 @@
+import curlify
 import requests
 from urllib.parse import parse_qs, urlparse
 # from utils.allure_helper import allure_attach_request
@@ -46,15 +47,27 @@ class AuthSession(Session):
     # @raise_for_status
     # @allure_attach_request
     def request(self, method, url, **kwargs):
-        """Сохраняем все cookies из redirect'a и сохраняем code авторизации из redirect_uri,
-        И используем в дальнейшем в последующих запросах этой сессии."""
+        """Сохраняем cookies, code из редиректа и логируем curl."""
 
-        response = super().request(method, self.base_url + url, **kwargs)
+        full_url = self.base_url + url
+
+        # Отделяем параметры для Request и send
+        request_kwargs = {k: kwargs[k] for k in ['params', 'data', 'json', 'headers', 'files'] if k in kwargs}
+        send_kwargs = {k: kwargs[k] for k in ['timeout', 'allow_redirects', 'proxies', 'stream', 'verify', 'cert'] if
+                       k in kwargs}
+
+        # Подготовка запроса
+        req = requests.Request(method, full_url, **request_kwargs)
+        prep = self.prepare_request(req)
+
+        # Отправляем запрос
+        response = super().send(prep, **send_kwargs)
+
+        # Сохраняем куки и code из redirect
         for r in response.history:
-            cookies = r.cookies.get_dict()
-            self.cookies.update(cookies)
-            code = parse_qs(urlparse(r.headers.get("Location")).query).get("code", None)
+            self.cookies.update(r.cookies.get_dict())
+            code = parse_qs(urlparse(r.headers.get("Location", "")).query).get("code")
             if code:
-                self.code = code
+                self.code = code[0]
 
         return response
