@@ -19,6 +19,7 @@ class SpendingPage:
         self.checkbox_for_all = browser.element('thead input[type="checkbox"]')
         self.button_delete = browser.element('.spendings__bulk-actions .button_type_small')
         self.successful_delete = browser.element('.Toastify__toast-body div:nth-child(2)')
+        self.no_spends = browser.element('.main-content__section-history > div > div:nth-child(3)')
 
     def check_spending_page_titles(self):
         browser.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -51,7 +52,7 @@ class SpendingPage:
         browser.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
         self.checkbox_for_all.should(be.visible).click()
         self.button_delete.click()
-        self.successful_delete.should(have.text('Spendings deleted'))
+        self.no_spends.should(have.text('No spendings provided yet!'))
 
 
 

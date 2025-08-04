@@ -47,6 +47,7 @@ class ProfilePage:
     def check_filling_form(self, name, surname):
         self.firstname.set_value(name)
         self.surname.set_value(surname)
+        browser.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
         self.button_submit.click()
 
         self.successful_alert.should(have.text('Profile successfully updated'))
