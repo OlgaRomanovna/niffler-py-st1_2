@@ -50,14 +50,6 @@ class TestSpending:
 
     @Pages.main_page
     @TestData.category(Categories.TEST_CATEGORY4)
-    @TestData.spends(
-        SpendAdd(
-            amount=108.51,
-            description="QA.GURU Python Advanced 1",
-            category=Categories.TEST_CATEGORY4,
-            spendDate="2024-08-08T18:39:27.955Z",
-            currency="RUB"
-        )
-    )
-    def test_delete_all_spending(self, category, spends):
+    def test_delete_all_spending(self, category):
+        spending_page.create_spending(1000, 'RUB', f'{Categories.TEST_CATEGORY4}', 'breakfast')
         spending_page.check_delete_spending()

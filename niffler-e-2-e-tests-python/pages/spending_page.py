@@ -48,7 +48,8 @@ class SpendingPage:
             print(f"Найдена ячейка с текстом: {cell.get(query.text)}")
 
     def check_delete_spending(self):
-        self.checkbox_for_all.click()
+        browser.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        self.checkbox_for_all.should(be.visible).click()
         self.button_delete.click()
         self.successful_delete.should(have.text('Spendings deleted'))
 

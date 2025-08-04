@@ -15,3 +15,4 @@ class Envs(BaseModel):
     auth_url: str
     kafka_bootstrap_servers: str
     auth_secret: str
+    logs_file: str

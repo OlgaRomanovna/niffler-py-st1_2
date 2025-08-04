@@ -1,15 +1,9 @@
-import os
 import pytest
-from dotenv import load_dotenv
 from pages.login_page import login_page
 from pages.spending_page import spending_page
 from marks import Pages
 
 class TestLogin:
-
-    @Pages.main_page
-    def test_successful_login(self):
-        spending_page.check_spending_page_titles()
 
     test_data = [
         {'username': 'oleg', 'password': 12345},
@@ -20,3 +14,8 @@ class TestLogin:
     def test_wrong_data(self, user):
         login_page.sign_in(user['username'], user['password'])
         login_page.check_error_message()
+
+    @Pages.main_page
+    def test_successful_login(self):
+        spending_page.check_spending_page_titles()
+
